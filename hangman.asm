@@ -17,10 +17,15 @@
 	prompt: .asciiz "\nEnter a letter: "
 	array: .space 40
 	word: .asciiz "H", "A", "N", "G", "M", "A", "N"
+	welcome_msg: .asciiz "*** Welcome to the HangMan Game ***"
 	
 .text
 	
 main:	
+	li $v0, 55		# print welcome prompt with pop window
+	la $a0, welcome_msg
+	li $a1, 1
+	syscall
 	
 	li $t4, 4
 	loop:
