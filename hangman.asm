@@ -40,10 +40,10 @@ main:
    	move    $a0, $s2           
     	li      $a1, 20
     	li      $v0, 8
-    	syscall
+    	syscall # <----- error happens right here
     	
     	#store the word in an array
-    	sw      $a0,a rray($t5)
+    	sw      $a0, array($t5)
     	addi	$t4, $t4, 1  #iteration
     	addi    $t5, $t5,4           
     	addi    $s2, $s2,20   #amount of space needed for string
