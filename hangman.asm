@@ -14,11 +14,39 @@
 
 .data
 	frameBuffer:	.space	0x80000
+	prompt: .asciiz "\nEnter a letter: "
+	array: .space 40
+	word: .asciiz "H", "A", "N", "G", "M", "A", "N"
+	
 .text
+	
+main:	
+	
+	li $t4, 4
+	loop:
+	beq $t3, 10, game_over 	#when the amount of guesses reaches 10, it's gameover
+	
+    	#display message
+    	li      $v0, 4
+    	la      $a0, prompt
+    	syscall
 
-main:
+    	#read in the string 
+   	move    $a0, $s2           
+    	li      $a1, 20
+    	li      $v0, 8
+    	syscall
+    	
+    	#store the word in an array
+    	sw      $a0,a rray($t5)
+    	addi	$t4, $t4, 1  #iteration
+    	addi    $t5, $t5,4           
+    	addi    $s2, $s2,20   #amount of space needed for string
 
-######################### Initial Bitmap ###########################################
+    	j loop
+	
+	
+	######################### Initial Bitmap ###########################################
 	# fill background color
 	la 	$t0, frameBuffer		# load frameBuffer addr
    	li 	$t1, 0x2000			# save 512x256 pixels
@@ -69,6 +97,11 @@ main:
    	sub 	$t1, $t1, 1			# decrement number of pixel
    	bnez 	$t1, gallow_base
 ################################ End Initial Bitmap #######################################
+
+#display some sort of text and end screen like "Game Over!"	
+game_over:
+
+
 Exit:
 	li $v0, 10 # terminate the program gracefully
 	syscall
