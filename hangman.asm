@@ -1,9 +1,5 @@
 # CS2640 Final Project - Hangman Game
-# Team Member:
-# Huijun Hu
-# Yvonne Li
-# Isaiah Hessler
-# Rebecca Glatts
+# Team Member: Huijun Hu, Yvonne Li, Isaiah Hessler, Rebecca Glatts
 
 # Bitmap Display Configuration:
 # - Unit width in pixels: 4					     
@@ -20,11 +16,8 @@
  welcome_msg: .asciiz "*** Welcome to the Hangman Game ***"
  over_msg: .asciiz "*** Game Over!! ***"
  guess: .asciiz "_ _ _ _ _ _ _ (Hints: 7 letters)"
- size: .word 8 
-
  
 .text
- 
 main: 
  li $v0, 55  # print welcome prompt with pop window
  la $a0, welcome_msg
@@ -32,7 +25,6 @@ main:
  syscall
  
  li $t4, 4
- 
  loop:
  beq $t3, 10, game_over  #when the amount of guesses reaches 10, it's gameover
  
@@ -42,7 +34,6 @@ main:
  li $a1, 1
  syscall
      
-  
  #print blank guess with pop window
  li $v0, 55
  la $a0, guess
