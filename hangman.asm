@@ -13,44 +13,56 @@
 # - Base Address for Display: 0x10010000
 
 .data
-	frameBuffer:	.space	0x80000
-	prompt: .asciiz "\nEnter a letter: "
-	array: .space 500
-	word: .asciiz "H", "A", "N", "G", "M", "A", "N"
-	welcome_msg: .asciiz "*** Welcome to the Hangman Game ***"
-	over_msg: .asciiz "*** Game Over!! ***"
-	
+ frameBuffer: .space 0x80000
+ prompt: .asciiz "Enter 1 letter each time: "
+ array: .space 2
+ word: .asciiz "H", "A", "N", "G", "M", "A", "N"
+ welcome_msg: .asciiz "*** Welcome to the Hangman Game ***"
+ over_msg: .asciiz "*** Game Over!! ***"
+ guess: .asciiz "_ _ _ _ _ _ _ (Hints: 7 letters)"
+ size: .word 8 
+
+ 
 .text
-	
-main:	
-	li $v0, 55		# print welcome prompt with pop window
-	la $a0, welcome_msg
-	li $a1, 1
-	syscall
-	
-	li $t4, 4
-	loop:
-	beq $t3, 10, game_over 	#when the amount of guesses reaches 10, it's gameover
-	
-    	#display message
-    	li $v0, 4
-    	la $a0, prompt
-    	syscall
+ 
+main: 
+ li $v0, 55  # print welcome prompt with pop window
+ la $a0, welcome_msg
+ li $a1, 1
+ syscall
+ 
+ li $t4, 4
+ 
+ loop:
+ beq $t3, 10, game_over  #when the amount of guesses reaches 10, it's gameover
+ 
+ #display message with pop window
+ li $v0, 55
+ la $a0, prompt
+ li $a1, 1
+ syscall
+     
+  
+ #print blank guess with pop window
+ li $v0, 55
+ la $a0, guess
+ li $a1, 1
+ syscall
 
-    	#read in the string 
-    	li $v0, 12
-    	la $a0, array
-    	li $a1, 20
-    	move $t0, $a0
-    	syscall # <----- error happens right here
-    	
-    	#store the word in an array
-    	sb      $a0, array($t5)
-    	addi	$t3, $t3, 1  #iteration
-    	addi    $t5, $t5,4           
-    	addi    $s2, $s2,20   #amount of space needed for string
+ #read in the string 
+ li $v0, 12
+ la $a0, array
+ li $a1, 20
+ # move $t0, $a0
+ syscall # <----- error happens right here     
+     
+ #store the word in an array
+ sb      $a0, array($t5)
+ addi $t3, $t3, 1  #iteration
+ addi    $t5, $t5,4           
+ addi    $s2, $s2,20   #amount of space needed for string
 
-    	j loop
+ j loop
 	
 	
 	######################### Initial Bitmap ###########################################
