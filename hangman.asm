@@ -10,12 +10,11 @@
 
 .data
  frameBuffer: .space 0x80000
- prompt: .asciiz "Enter 1 letter each time: "
+ prompt: .asciiz "\nEnter 1 letter each time: "
  array: .space 2
  word: .asciiz "H", "A", "N", "G", "M", "A", "N"
  welcome_msg: .asciiz "*** Welcome to the Hangman Game ***"
  over_msg: .asciiz "*** Game Over!! ***"
- guess: .asciiz "_ _ _ _ _ _ _ (Hints: 7 letters)"
  
 .text
 main: 
