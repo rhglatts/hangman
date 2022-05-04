@@ -117,9 +117,198 @@ main:
    	
 ################################ End Initial Bitmap #######################################
 
+################################ Hangman figure #######################################
+   
+   drawHead:				
+   	la 	$t0, frameBuffer	# load frameBuffer addr
+	li	$t2, 0x00FFFFFF		# load color white
+	addi	$t0, $t0, 6256		# line 1 centered at string position
+	sw 	$t2, 0($t0)
+	sw 	$t2, -4($t0)
+	sw 	$t2, -8($t0)
+	sw 	$t2, 4($t0)
+	sw 	$t2, 8($t0)
+	addi	$t0, $t0, 256		# line 2
+	sw 	$t2, -16($t0)
+	sw 	$t2, -12($t0)
+	sw 	$t2, 12($t0)
+	sw 	$t2, 16($t0)
+	addi	$t0, $t0, 256		# line 3
+	sw 	$t2, -20($t0)
+	sw 	$t2, 20($t0)
+	addi	$t0, $t0, 256		# line 4
+	sw 	$t2, -24($t0)
+	sw 	$t2, 24($t0)
+	addi	$t0, $t0, 256		# line 5
+	sw 	$t2, -28($t0)
+	sw 	$t2, 28($t0)
+	addi	$t0, $t0, 256		# line 6
+	sw 	$t2, -28($t0)
+	sw 	$t2, -16($t0)
+	sw 	$t2, -8($t0)
+	sw 	$t2, 8($t0)
+	sw 	$t2, 16($t0)
+	sw 	$t2, 28($t0)
+	addi	$t0, $t0, 256		# line 7
+	sw 	$t2, -32($t0)
+	sw 	$t2, -12($t0)
+	sw 	$t2, 12($t0)
+	sw 	$t2, 32($t0)
+	addi	$t0, $t0, 256		# line 8
+	sw 	$t2, -32($t0)
+	sw 	$t2, -16($t0)
+	sw 	$t2, -8($t0)
+	sw 	$t2, 8($t0)
+	sw 	$t2, 16($t0)
+	sw 	$t2, 32($t0)
+	addi	$t0, $t0, 256		# line 9
+	sw 	$t2, -32($t0)
+	sw 	$t2, 32($t0)
+	addi	$t0, $t0, 256		# line 10
+	sw 	$t2, -32($t0)
+	sw 	$t2, 32($t0)
+	addi	$t0, $t0, 256		# line 11
+	sw 	$t2, -32($t0)
+	sw 	$t2, 12($t0)
+	sw 	$t2, 32($t0)
+	addi	$t0, $t0, 256		# line 12
+	sw 	$t2, -28($t0)
+	sw 	$t2, ($t0)
+	sw 	$t2, 4($t0)
+	sw 	$t2, 8($t0)
+	sw 	$t2, 28($t0)
+	addi	$t0, $t0, 256		# line 13
+	sw 	$t2, -28($t0)
+	sw 	$t2, -4($t0)
+	sw 	$t2, 28($t0)
+	addi	$t0, $t0, 256		# line 14
+	sw 	$t2, -24($t0)
+	sw 	$t2, 24($t0)
+	addi	$t0, $t0, 256		# line 15
+	sw 	$t2, -20($t0)
+	sw 	$t2, 20($t0)
+	addi	$t0, $t0, 256		# line 16
+	sw 	$t2, -16($t0)
+	sw 	$t2, -12($t0)
+	sw 	$t2, 12($t0)
+	sw 	$t2, 16($t0)
+	addi	$t0, $t0, 256		# line 17
+	sw 	$t2, -8($t0)
+	sw 	$t2, -4($t0)
+	sw 	$t2, ($t0)
+	sw 	$t2, 4($t0)
+	sw 	$t2, 8($t0)	
+	nop				
+	nop
+	# j back where it left off
+   
+   drawBody:
+   	la 	$t0, frameBuffer	# load frameBuffer addr
+	li	$t2, 0x00FFFFFF		# load color white
+	addi	$t0, $t0, 0x2970	# line 1 centered at string position
+	li	$t1, 20
+	db_loop:
+	sw 	$t2, 0($t0)
+   	addi   	$t0, $t0, 0x100
+   	sub 	$t1, $t1, 1
+   	bnez 	$t1, db_loop
+   	nop				
+	nop
+	# j back where it left off
+   drawArm1:
+   	la 	$t0, frameBuffer	# load frameBuffer addr
+	li	$t2, 0x00FFFFFF		# load color white
+	addi	$t0, $t0, 0x3070
+	sw 	$t2, ($t0)
+	sw 	$t2, -4($t0)
+	sw 	$t2, -8($t0)
+	sw 	$t2, -12($t0)
+	sw 	$t2, -16($t0)
+	sw 	$t2, -20($t0)
+	sw 	$t2, -24($t0)
+	sw 	$t2, -0x118($t0)
+	sw 	$t2, -0x218($t0)
+	sw 	$t2, -0x318($t0)
+	sw 	$t2, -0x418($t0)
+   	nop				
+	nop
+   	# j back where it left off
+   	
+   drawArm2:
+   	la 	$t0, frameBuffer	# load frameBuffer addr
+	li	$t2, 0x00FFFFFF		# load color white
+	addi	$t0, $t0, 0x3170	
+	sw 	$t2, ($t0)
+	sw 	$t2, 4($t0)
+	sw 	$t2, 8($t0)
+	sw 	$t2, 12($t0)
+	sw 	$t2, 16($t0)
+	sw 	$t2, 20($t0)
+	sw 	$t2, 24($t0)
+	sw 	$t2, 0x118($t0)
+	sw 	$t2, 0x218($t0)
+	sw 	$t2, 0x318($t0)
+	sw 	$t2, 0x418($t0)
+   	nop				
+	nop
+   	# j back where it left off
+   	
+      	drawLeg1:
+	la 	$t0, frameBuffer	# load frameBuffer addr
+	li	$t2, 0x00FFFFFF		# load color white
+	addi	$t0, $t0, 0x3C70	
+	sw 	$t2, ($t0)
+	sw 	$t2, -4($t0)
+	sw 	$t2, -8($t0)
+	sw 	$t2, -12($t0)
+	sw 	$t2, -16($t0)
+	sw 	$t2, -20($t0)
+	la 	$t0, frameBuffer	# load frameBuffer addr
+	li	$t2, 0x00FFFFFF		# load color white
+	addi	$t0, $t0, 0x3C58	
+	li	$t1, 10
+	lg1_loop:
+	sw 	$t2, 0($t0)
+   	addi   	$t0, $t0, 0x100
+   	sub 	$t1, $t1, 1
+   	bnez 	$t1, lg1_loop
+	nop
+	nop
+   	# j back where it left off
+   drawLeg2:
+   	la 	$t0, frameBuffer	# load frameBuffer addr
+	li	$t2, 0x00FFFFFF		# load color white
+	addi	$t0, $t0, 0x3C70	
+	sw 	$t2, ($t0)
+	sw 	$t2, 4($t0)
+	sw 	$t2, 8($t0)
+	sw 	$t2, 12($t0)
+	sw 	$t2, 16($t0)
+	sw 	$t2, 20($t0)
+	sw 	$t2, 24($t0)
+	la 	$t0, frameBuffer	# load frameBuffer addr
+	li	$t2, 0x00FFFFFF		# load color white
+	addi	$t0, $t0, 0x3C88	
+	li	$t1, 15
+	lg2_loop:
+	sw 	$t2, 0($t0)
+   	addi   	$t0, $t0, 0x100
+   	sub 	$t1, $t1, 1
+   	bnez 	$t1, lg2_loop
+   	nop				
+	nop
+   	# j back where it left off
+   	
 
+#################################### End Draw Hangman ############################################## 
+ 	
 #display some sort of text and end screen like "Game Over!"	
 game_over:
+	nop
+	li $v0, 55		# print game over prompt with pop window
+	la $a0, over_msg
+	li $a1, 1
+	syscall
 
 
 Exit:
