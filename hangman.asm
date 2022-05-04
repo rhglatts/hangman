@@ -18,6 +18,7 @@
 	array: .space 500
 	word: .asciiz "H", "A", "N", "G", "M", "A", "N"
 	welcome_msg: .asciiz "*** Welcome to the Hangman Game ***"
+	over_msg: .asciiz "*** Game Over!! ***"
 	
 .text
 	
