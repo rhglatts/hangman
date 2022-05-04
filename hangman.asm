@@ -28,17 +28,11 @@ main:
  loop:
  beq $t3, 10, game_over  #when the amount of guesses reaches 10, it's gameover
  
- #display message with pop window
- li $v0, 55
+ #display prompt message
+ li $v0, 4
  la $a0, prompt
- li $a1, 1
  syscall
      
- #print blank guess with pop window
- li $v0, 55
- la $a0, guess
- li $a1, 1
- syscall
 
  #read in the string 
  li $v0, 12
@@ -52,9 +46,6 @@ main:
  addi $t3, $t3, 1  #iteration
  addi    $t5, $t5,4           
  addi    $s2, $s2,20   #amount of space needed for string
-
- j loop
-	
 	
 	######################### Initial Bitmap ###########################################
 	# fill background color
@@ -305,6 +296,8 @@ main:
    	
 
 #################################### End Draw Hangman ############################################## 
+
+ j loop
  	
 #display some sort of text and end screen like "Game Over!"	
 game_over:
