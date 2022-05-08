@@ -12,9 +12,10 @@
  frameBuffer: .space 0x80000
  prompt: .asciiz "\nEnter 1 letter each time: "
  array: .space 2
- word: .asciiz "H", "A", "N", "G", "M", "A", "N"
+ word: .asciiz "HANGMAN", "ASSEMBLY", "COMPUTER", "MIPS", "CODING"
  welcome_msg: .asciiz "*** Welcome to the Hangman Game ***"
  over_msg: .asciiz "*** Game Over!! ***"
+ letter: .space 20
  
 .text
 main: 
@@ -27,19 +28,33 @@ main:
  loop:
  beq $t3, 10, game_over  #when the amount of guesses reaches 10, it's gameover
  
+ #randomly choose a word
+ li $a1, 5
+ li $v0, 42
+ syscall
+
+#creating offset (20 space needed for string)
+ move $t0, $a0 
+ mul $t0, $t0, 20
+ addi $t0, $t0, 20
+ 
+ #load word from memory (to-do)
+ 
+ 
+ 
  #display prompt message
  li $v0, 4
  la $a0, prompt
  syscall
      
-
  #read in the string 
- li $v0, 12
+ li $v0, 8
  la $a0, array
  li $a1, 20
- # move $t0, $a0
  syscall # <----- error happens right here     
      
+     
+ 
  #store the word in an array
  sb      $a0, array($t5)
  addi $t3, $t3, 1  #iteration
