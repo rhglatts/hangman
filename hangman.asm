@@ -24,42 +24,32 @@ main:
  li $a1, 1
  syscall
  
+############## random number generator ######################################
+# get the time
+li	$v0, 30		# get time in milliseconds - 64-bits
+syscall
+
+move	$t0, $a0	# save the lower 32-bits of time
+
+# seed the random generator
+li	$a0, 1		# random generator id
+move 	$a1, $t0	# seed from time
+li	$v0, 40		# seed random number generator syscall
+syscall
+
+li	$a0, 1		# random generator id
+li	$a1, 10		# upper bound of the range
+li	$v0, 42		# random int range
+syscall
+
+# $a0 now holds the random number
+move $t1, $a0		# save the generated index into $t1
+################# end random number generator ################################
+
  li $t4, 4
  loop:
  beq $t3, 10, game_over  #when the amount of guesses reaches 10, it's gameover
- 
- #randomly choose a word
- li $a1, 5
- li $v0, 42
- syscall
 
-#creating offset (20 space needed for string)
- move $t0, $a0 
- mul $t0, $t0, 20
- addi $t0, $t0, 20
- 
- #load word from memory (to-do)
- 
- 
- 
- #display prompt message
- li $v0, 4
- la $a0, prompt
- syscall
-     
- #read in the string 
- li $v0, 8
- la $a0, array
- li $a1, 20
- syscall # <----- error happens right here     
-     
-     
- 
- #store the word in an array
- sb      $a0, array($t5)
- addi $t3, $t3, 1  #iteration
- addi    $t5, $t5,4           
- addi    $s2, $s2,20   #amount of space needed for string
 	
 	######################### Initial Bitmap ###########################################
 	# fill background color
