@@ -11,11 +11,9 @@
 .data
  frameBuffer: .space 0x80000
  prompt: .asciiz "\nEnter 1 letter each time: "
- array: .space 2
- word: .asciiz "HANGMAN", "ASSEMBLY", "COMPUTER", "MIPS", "CODING"
+ strArray: .asciiz "iceberg", "hangman", "ironman", "earplug", "cabbage", "adopter", "biznaga", "hackman", "mercury", "purpose"
  welcome_msg: .asciiz "*** Welcome to the Hangman Game ***"
  over_msg: .asciiz "*** Game Over!! ***"
- letter: .space 20
  
 .text
 main: 
@@ -45,6 +43,17 @@ syscall
 # $a0 now holds the random number
 move $t1, $a0		# save the generated index into $t1
 ################# end random number generator ################################
+
+######### load the string from array with generated index ####################
+
+sll $t1, $t1, 3         # $t1 = $t2 * 8
+la $t0, strArray	# initial addr of array -> $t0
+add $t0, $t0, $t1	# locate element in array[index]
+
+la $a0, ($t0)		# print the word (just for testing)
+li $v0, 4
+syscall
+################# end generate random string ###############################
 
  li $t4, 4
  loop:
