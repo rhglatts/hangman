@@ -14,15 +14,45 @@
  strArray: .asciiz "iceberg", "hangman", "ironman", "earplug", "cabbage", "adopter", "biznaga", "hackman", "mercury", "purpose"
  welcome_msg: .asciiz "*** Welcome to the Hangman Game ***"
  over_msg: .asciiz "*** Game Over!! ***"
+ word_out:.asciiz "Hint: it is 7-letter long.\n"
+ dash: .asciiz "_ "
  
 .text
 main: 
- li $v0, 55  # print welcome prompt with pop window
- la $a0, welcome_msg
- li $a1, 1
- syscall
+li $v0, 55  # print welcome prompt with pop window
+la $a0, welcome_msg
+li $a1, 1
+syscall
  
-############## random number generator ######################################
+jal ranGen		# call ranGen, string return in $v0
+
+move $a0, $v0		# print the word (just for testing)
+li $v0, 4
+syscall
+
+li $t3, 1		# loop iterator
+li $t2, 1		# dashes iterator
+ 
+li $v0, 55  # print welcome prompt with pop window
+la $a0, word_out
+li $a1, 1
+syscall
+ 
+loop:
+beq $t3, 10, game_over  #when the amount of guesses reaches 10, it's gameover
+ 
+# prompt ask for input
+la $a0, prompt
+li $v0, 4
+syscall
+# print dashes
+# read the input
+# compare to the letter
+add $t3, $t3, 1
+j loop
+
+##************ random string generator **************************************#
+ranGen:
 # get the time
 li	$v0, 30		# get time in milliseconds - 64-bits
 syscall
@@ -42,25 +72,16 @@ syscall
 
 # $a0 now holds the random number
 move $t1, $a0		# save the generated index into $t1
-################# end random number generator ################################
-
-######### load the string from array with generated index ####################
 
 sll $t1, $t1, 3         # $t1 = $t2 * 8
-la $t0, strArray	# initial addr of array -> $t0
-add $t0, $t0, $t1	# locate element in array[index]
+la $v0, strArray	# initial addr of array -> $t0
+add $v0, $v0, $t1	# locate element in array[index]
 
-la $a0, ($t0)		# print the word (just for testing)
-li $v0, 4
-syscall
-################# end generate random string ###############################
-
- li $t4, 4
- loop:
- beq $t3, 10, game_over  #when the amount of guesses reaches 10, it's gameover
-
+jr $ra
+########## end load the string from array with generated index ################
 	
-	######################### Initial Bitmap ###########################################
+######################### Initial Bitmap ###########################################
+Bitmap:
 	# fill background color
 	la 	$t0, frameBuffer		# load frameBuffer addr
    	li 	$t1, 0x8000			# save 256x512 pixels
@@ -76,7 +97,8 @@ syscall
 	addi	$t0, $t0, 3908			# locate left top coner of gallow
 	li	$t1, 35				# gallow horizontal wood width
 	li	$t2, 0x00663300			# load gallow color
-	
+
+	jr 	$ra				# exit bitmap initializating
    gallow_top:
    	sw 	$t2, 0($t0)
    	sw 	$t2, 256($t0)
@@ -307,10 +329,9 @@ syscall
 	nop
    	# j back where it left off
    	
-
 #################################### End Draw Hangman ############################################## 
 
- j loop
+ #j loop
  	
 #display some sort of text and end screen like "Game Over!"	
 game_over:
@@ -319,7 +340,7 @@ game_over:
 	la $a0, over_msg
 	li $a1, 1
 	syscall
-
+	j Exit
 
 Exit:
 	li $v0, 10 # terminate the program gracefully
