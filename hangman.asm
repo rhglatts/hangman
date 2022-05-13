@@ -27,8 +27,7 @@ syscall
 jal ranGen		# call ranGen, string return in $v0
 
 move $a0, $v0		# print the word (just for testing)
-li $v0, 4
-syscall
+jal print
 
 li $t3, 1		# loop iterator
 li $t2, 1		# dashes iterator
@@ -79,6 +78,16 @@ add $v0, $v0, $t1	# locate element in array[index]
 
 jr $ra
 ########## end load the string from array with generated index ################
+
+print:
+	li $v0, 4
+	syscall
+	jr $ra	
+	
+print_int:
+	li $v0, 1
+	syscall
+	jr $ra
 	
 ######################### Initial Bitmap ###########################################
 Bitmap:
