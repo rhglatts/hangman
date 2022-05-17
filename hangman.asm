@@ -16,6 +16,12 @@
  over_msg: .asciiz "*** Game Over!! ***"
  word_out:.asciiz "Hint: it is 7-letter long.\n"
  dash: .asciiz "_ "
+ space: .asciiz " "
+ hiddenStr: .asciiz 
+ 
+ # test only, delete in final
+ s1: .asciiz "The word generated is: (display to test, not in final program): "
+ s2: .asciiz "\ntest if we can access char in str: (display to test, not in final program): "
  
 .text
 main: 
@@ -25,30 +31,50 @@ li $a1, 1
 syscall
  
 jal ranGen		# call ranGen, string return in $v0
+move $t1, $v0		# the string now in $t1
 
-move $a0, $v0		# print the word (just for testing)
+la $a0, s1
 jal print
+move $a0, $t1
+jal print		# print for test only
 
-li $t3, 1		# loop iterator
-li $t2, 1		# dashes iterator
- 
+
 li $v0, 55  # print welcome prompt with pop window
 la $a0, word_out
 li $a1, 1
 syscall
  
-loop:
-beq $t3, 10, game_over  #when the amount of guesses reaches 10, it's gameover
- 
-# prompt ask for input
-la $a0, prompt
-li $v0, 4
+la $t0, hiddenStr
+move $t0, $t1		# $t0 = $t1
+
+la $a0, s2
+jal print
+
+li $t2, 0		# iterator
+charLoop:
+beq $t2, 7, endCharLoop
+lb $a0, 0($t0)
+li $v0, 11
 syscall
-# print dashes
-# read the input
-# compare to the letter
-add $t3, $t3, 1
-j loop
+add $t0, $t0, 1		# increment str[i]
+add $t2, $t2, 1		# increment iterator
+j charLoop
+
+endCharLoop:
+
+li $t3, 1		# iterator
+loop:
+beq $t3, 6, game_over  	#when the amount of incorrect guesses reaches 10, it's gameover
+ 
+la $a0, prompt		# prompt ask for input
+jal print
+
+li $v0, 11
+syscall
+move $t8, $v0		# store user char input in $t8
+
+ add $t3, $t3, 1
+ j loop
 
 ##************ random string generator **************************************#
 ranGen:
@@ -78,7 +104,7 @@ add $v0, $v0, $t1	# locate element in array[index]
 
 jr $ra
 ########## end load the string from array with generated index ################
-
+	
 print:
 	li $v0, 4
 	syscall
@@ -87,8 +113,8 @@ print:
 print_int:
 	li $v0, 1
 	syscall
-	jr $ra
-	
+	jr $ra	
+
 ######################### Initial Bitmap ###########################################
 Bitmap:
 	# fill background color
