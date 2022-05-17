@@ -52,16 +52,15 @@ jal print
 
 li $t2, 0		# iterator
 charLoop:
-addi $sp, $sp, -4	# add $ra to stack
-sw $ra, 0($sp)
 
 beq $t2, 7, endCharLoop
 lb $a0, 0($t0)
 li $v0, 11
 syscall
 beq $t8, $a0, equals
- lw $ra, 0($sp)		# pop $ra off the stack
- addi $sp, $sp, 4
+
+charMid:
+
 add $t0, $t0, 1		# increment str[i]
 add $t2, $t2, 1		# increment iterator
 j charLoop
@@ -70,34 +69,30 @@ j charLoop
  la $a0, dash	# TEST correct input by adding a _ where a correct guess is made
  jal print
 
- jr $ra		# jump back to beq equals
+j charMid
  
  
 endCharLoop:
-lw $ra, 0($sp)
-addi $sp, $sp, 4
-jr $ra 		# hopefully jump back to loop after the link to iterate
+j loopReturn
 
 
 
 li $t3, 1		# iterator
 
 loop:
-addi $sp, $sp, -4
-sw $ra, 0($sp)
 
 beq $t3, 10, game_over  	# when the amount of incorrect guesses reaches 10, it's gameover
  
 la $a0, prompt			# prompt ask for input
 jal print
 
-
-
 li $v0, 12
 syscall
 move $t8, $v0		# store user char input in $t8
 
-jal charLoop
+j charLoop
+
+loopReturn:
 
  add $t3, $t3, 1
  j loop
