@@ -51,18 +51,36 @@ la $a0, s2
 jal print
 
 li $t2, 0		# iterator
-charLoop:
 
+la $s1, dash
+la $s2, dash
+la $s3, dash
+la $s4, dash
+la $s5, dash
+la $s6, dash
+la $s7, dash
+
+addi $sp, $sp, -28
+sw $s1, 0($sp)
+sw $s2, 4($sp)
+sw $s3, 8($sp)
+sw $s4, 12($sp)
+sw $s5, 16($sp)
+sw $s6, 20($sp)
+sw $s7, 24($sp)
+
+charLoop:
 beq $t2, 7, endCharLoop
 lb $a0, 0($t0)
 beq $t8, $a0, equals
- la $a0, dash	# TEST correct input by adding a _ where a correct guess is made
- jal print
+
+lw $a0, 0($sp)
+jal print
 
 charMid:
-
 add $t0, $t0, 1		# increment str[i]
 add $t2, $t2, 1		# increment iterator
+add $sp, $sp, 4
 j charLoop
 
  equals:
@@ -76,6 +94,7 @@ j charMid
 endCharLoop:
 addi $t0, $t0, -7		# increment str[i]
 addi $t2, $t2, -7		# increment iterator
+addi $sp, $sp, -28
 j loopReturn
 
 
@@ -99,8 +118,6 @@ loopReturn:
 
  add $t3, $t3, 1
  j loop
- 
-
  
 
 ##************ random string generator **************************************#
