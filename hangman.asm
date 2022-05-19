@@ -206,7 +206,9 @@ Bitmap:
    	subi   	$t0, $t0, 4			# back to privious pixel position
    	sub 	$t1, $t1, 1			# decrement number of pixel
    	bnez 	$t1, gallow_base2
-   	
+nop
+nop
+jr $ra
 ################################ End Initial Bitmap #######################################
 
 ################################ Hangman figure #######################################
@@ -292,7 +294,7 @@ Bitmap:
 	sw 	$t2, 8($t0)	
 	nop				
 	nop
-	# j back where it left off
+	jr $ra				#j back where it left off
    
    drawBody:
    	la 	$t0, frameBuffer	# load frameBuffer addr
@@ -306,7 +308,7 @@ Bitmap:
    	bnez 	$t1, db_loop
    	nop				
 	nop
-	# j back where it left off
+	jr $ra				#j back where it left off
    drawArm1:
    	la 	$t0, frameBuffer	# load frameBuffer addr
 	li	$t2, 0x00FFFFFF		# load color white
@@ -324,7 +326,7 @@ Bitmap:
 	sw 	$t2, -0x418($t0)
    	nop				
 	nop
-   	# j back where it left off
+   	jr $ra				#j back where it left off
    	
    drawArm2:
    	la 	$t0, frameBuffer	# load frameBuffer addr
@@ -343,7 +345,7 @@ Bitmap:
 	sw 	$t2, 0x418($t0)
    	nop				
 	nop
-   	# j back where it left off
+   	jr $ra				#j back where it left off
    	
       	drawLeg1:
 	la 	$t0, frameBuffer	# load frameBuffer addr
@@ -366,7 +368,7 @@ Bitmap:
    	bnez 	$t1, lg1_loop
 	nop
 	nop
-   	# j back where it left off
+   	jr $ra				#j back where it left off
    drawLeg2:
    	la 	$t0, frameBuffer	# load frameBuffer addr
 	li	$t2, 0x00FFFFFF		# load color white
@@ -389,7 +391,7 @@ Bitmap:
    	bnez 	$t1, lg2_loop
    	nop				
 	nop
-   	# j back where it left off
+   	jr $ra				#j back where it left off
    	
 #################################### End Draw Hangman ############################################## 
 
