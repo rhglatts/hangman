@@ -17,7 +17,7 @@
  word_out:.asciiz "Hint: it is 7-letter long.\n"
  dash: .asciiz "_ "
  space: .asciiz " "
- hiddenStr: .asciiz 
+ hiddenStr: .space 7 
  
  # test only, delete in final
  s1: .asciiz "The word generated is: (display to test, not in final program): "
@@ -73,6 +73,8 @@ j charMid
  
  
 endCharLoop:
+addi $t0, $t0, -7		# increment str[i]
+addi $t2, $t2, -7		# increment iterator
 j loopReturn
 
 
