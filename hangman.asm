@@ -55,9 +55,9 @@ charLoop:
 
 beq $t2, 7, endCharLoop
 lb $a0, 0($t0)
-li $v0, 11
-syscall
 beq $t8, $a0, equals
+ la $a0, dash	# TEST correct input by adding a _ where a correct guess is made
+ jal print
 
 charMid:
 
@@ -66,8 +66,9 @@ add $t2, $t2, 1		# increment iterator
 j charLoop
 
  equals:
- la $a0, dash	# TEST correct input by adding a _ where a correct guess is made
- jal print
+ li $v0, 11
+syscall
+
 
 j charMid
  
