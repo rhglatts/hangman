@@ -17,10 +17,11 @@
 # - Display height in pixels: 512
 # - Base Address for Display: 0x10010000
 
-#$ra - used to store return values from functions, including getting random numbers, and printing integers and chars
-#$v0 - where return value is stored after function is completed
-#$a0 - stores first argument of a call, usually used for messages stored in .data
-#$a1 - stores the second, optional argument of a call used for the random number generator and the pop-up windows
+# Register used:
+# $ra - used to store return values from functions, including getting random numbers, and printing integers and chars
+# $v0 - where return value is stored after function is completed
+# $a0 - stores first argument of a call, usually used for messages stored in .data
+# $a1 - stores the second, optional argument of a call used for the random number generator and the pop-up windows
 
 # $t0 - temporary register stores addr of frameBuffer
 # $t1 - temporary register stores loop iterator for Bitmap
@@ -30,6 +31,12 @@
 # $t6 - temporary register stores charArray iterator 
 # $t7 - temporary register stores index of charArray
 # $t8 - temporary register stores user input character
+
+# $s0: Stores the character from the hidden word to be compared to the user's input.
+# $s3: Holds each incorrect guess for comparison to the maximum amount of possible guesses. Throws a lose condition if it reaches a certain size. Also tied to the creation of the hangman body.
+# $s4: Holds the spaces allocated to our hidden string and appends them to the secret word. Secret word is then stored here.
+# $s5: A boolean for determining if a user's guess is correct or not. 1 is correct; 0 is incorrect.
+# $s7: Iterator for the total amount of guesses possible. If a user exceeds this they lose the game.
 
 .data
  frameBuffer: .space 0x80000
@@ -449,8 +456,6 @@ j endBM
    	j game_over			#j back where it left off
    	
 #################################### End Draw Hangman ############################################## 
-
- #j loop
  	
 #display some sort of text and end screen like "Game Over!"	
 game_over:
