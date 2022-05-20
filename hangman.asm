@@ -21,6 +21,7 @@ word_now: .asciiz 		"\n\nYour word is:\n"
  hiddenStr: .space 7 
  charArray: .byte 		'_','_', '_', '_', '_', '_', '_'
  dash: .byte 			'_','_', '_', '_', '_', '_', '_'
+  correct: .ascii                "\nCorrect!" 
   
 .text 
 main: 
@@ -124,6 +125,9 @@ j checkMatch
 match:
 li $s5, 0			# ifMatch = true
 sb $t8, charArray($t7) 		# charArray[i] = $t8
+
+la $a0, correct
+jal print
 
 j afterMatch
 
