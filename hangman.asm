@@ -25,7 +25,7 @@ word_now: .asciiz 		"\n\nYour word is:\n"
   
 .text 
 main: 
-li $v0, 55  			# print welcome prompt with pop window
+li $v0, 55  			# print welcome prompt in pop window
 la $a0, welcome_msg
 li $a1, 1
 syscall
@@ -36,7 +36,7 @@ endBM:
 jal ranGen			# call ranGen, string return in $v0
 move $t4, $v0			# the string now in $t4
 
-li $v0, 55  			# print welcome prompt with pop window
+li $v0, 55  			# print hint in pop window
 la $a0, hint
 li $a1, 1
 syscall
@@ -61,7 +61,7 @@ li $t6, 0			# charArray iterator
 
 charPrintLoop:
 beq $t5, 7, winCondition             # check if correct guess, show win condition
-beq $t6, 7, endCharPrintLoop         
+beq $t6, 7, endCharPrintLoop         # check if not match, go to endCharPrintLoop
 lb $a0, charArray($t6)
 li $v0, 11
 syscall
@@ -81,7 +81,7 @@ j midCharPrint
 
 endCharPrintLoop:
 
-la $a0, prompt
+la $a0, prompt                 # print prompt message
 li $v0, 4
 syscall
 li $v0, 12
@@ -97,16 +97,17 @@ add $s7, $s7, 1             # increment
 addi $t7, $t7, -7
 addi $s4, $s4, -7
 
-beq $s5, 1, oneMoreWrongGuess
-afterOneMoreWrongGuess:
-beq $s3, 1, drawHead
-beq $s3, 2, drawBody
-beq $s3, 3, drawArm1
-beq $s3, 4, drawArm2
-beq $s3, 5, drawLeg1
-beq $s3, 6, drawLeg2
-endDraw:
+beq $s5, 1, oneMoreWrongGuess          # check if not equal to 1, go to oneMoreWrongGuess
 
+afterOneMoreWrongGuess:        # loop for checking incorrect input to link to bitmap
+beq $s3, 1, drawHead         # check if first time incorrect, print drawHead
+beq $s3, 2, drawBody         # check if second time incorrect, print drawBody
+beq $s3, 3, drawArm1         # check if third time incorrect, print drawArm1
+beq $s3, 4, drawArm2         # check if fourth time incorrect, print drawArm2
+beq $s3, 5, drawLeg1         # check if fifth time incorrect, print drawLeg1
+beq $s3, 6, drawLeg2         # check if sixth time incorrect, print drawLeg2
+
+endDraw:
 j loop
 
 callMatch:
@@ -126,7 +127,7 @@ match:
 li $s5, 0			# ifMatch = true
 sb $t8, charArray($t7) 		# charArray[i] = $t8
 
-la $a0, correct
+la $a0, correct               # print correct message
 jal print
 
 j afterMatch
@@ -162,10 +163,9 @@ jr $ra
 ########## end load the string from array with generated index ################
 	
 print:
-	li $v0, 4
+	li $v0, 4           # print message
 	syscall
 	jr $ra	
-	
 print_int:
 	li $v0, 1
 	syscall
