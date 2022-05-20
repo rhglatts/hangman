@@ -10,63 +10,63 @@
 
 .data
  frameBuffer: .space 0x80000
- prompt: .asciiz "\nEnter 1 letter each time: "
- strArray: .asciiz "iceberg", "hangman", "ironman", "earplug", "cabbage", "adopter", "biznaga", "hackman", "mercury", "purpose"
- welcome_msg: .asciiz "*** Welcome to the Hangman Game ***"
- over_msg: .asciiz "*** Game Over!! ***"
- over_msg2: .asciiz "*** Game Won!! ***"
- hint:.asciiz "Hint: it is 7-letter long.\n"
-word_now: .asciiz "\nYour word is:\n"
- space: .asciiz " "
+ prompt: .asciiz 		"\nEnter 1 letter each time: "
+ strArray: .asciiz 		"iceberg", "hangman", "ironman", "earplug", "cabbage", "adopter", "biznaga", "hackman", "mercury", "purpose"
+ welcome_msg: .asciiz 		"*** Welcome to the Hangman Game ***"
+ over_msg: .asciiz 		"*** Game Over!! ***"
+ over_msg2: .asciiz 		"*** Game Won!! ***"
+ hint:.asciiz 			"Hint: it is 7-letter long.\n"
+word_now: .asciiz 		"\nYour word is:\n"
+ space: .asciiz 		" "
  hiddenStr: .space 7 
- charArray: .byte '_','_', '_', '_', '_', '_', '_'
- dash: .byte '_','_', '_', '_', '_', '_', '_'
+ charArray: .byte 		'_','_', '_', '_', '_', '_', '_'
+ dash: .byte 			'_','_', '_', '_', '_', '_', '_'
  
  # test only, delete in final
- s1: .asciiz "The word generated is: (display to test, not in final program): "
- s2: .asciiz "\ntest if we can access char in str: (display to test, not in final program): "
+ s1: .asciiz 			"The word generated is: (display to test, not in final program): "
+ s2: .asciiz 			"\ntest if we can access char in str: (display to test, not in final program): "
  
-.text
+.text 
 main: 
-main: 
-li $v0, 55  # print welcome prompt with pop window
+li $v0, 55  			# print welcome prompt with pop window
 la $a0, welcome_msg
 li $a1, 1
 syscall
 
+j Bitmap			# draw bitmap setup
+endBM:
 
-jal ranGen		# call ranGen, string return in $v0
-move $t4, $v0		# the string now in $t4
+jal ranGen			# call ranGen, string return in $v0
+move $t4, $v0			# the string now in $t4
 
 la $a0, s1
 jal print
 move $a0, $t4
-jal print		# print for test only
+jal print			# print for test only
 
 
-li $v0, 55  # print welcome prompt with pop window
+li $v0, 55  			# print welcome prompt with pop window
 la $a0, hint
 li $a1, 1
 syscall
  
 la $s4, hiddenStr
-move $s4, $t4		# $s4 = $t4; hiddenStr = generated str
+move $s4, $t4			# $s4 = $t4; hiddenStr = generated str
 
-#______________
 
-li $s3, 0		# incorrect guess iterator
+li $s3, 0			# incorrect guess iterator
 li $s7, 0			# loop iterator
 li $s5, 0
 
 loop:
 beq $s3, 6, game_over		# 6 incorrect guess, end game
-beq $s7, 10, game_over
+beq $s7, 20, game_over
 
 
 la $a0, word_now
 jal print
 
-li $t6, 0		# charArray iterator
+li $t6, 0			# charArray iterator
 charPrintLoop:
 beq $t5, 7, winCondition
 beq $t6, 7, endCharPrintLoop
@@ -94,9 +94,9 @@ li $v0, 4
 syscall
 li $v0, 12
 syscall
-move $t8, $v0		# store user char input in $t8 
+move $t8, $v0			# store user char input in $t8 
 
-li $s5, 1		# boolean if match (true:0 false:1) defual false
+li $s5, 1			# boolean if match (true:0 false:1) defual false
 li $t5, 0
 j callMatch
 
@@ -107,7 +107,6 @@ addi $s4, $s4, -7
 
 beq $s5, 1, oneMoreWrongGuess
 afterOneMoreWrongGuess:
-beq $s3, 0, Bitmap
 beq $s3, 1, drawHead
 beq $s3, 2, drawBody
 beq $s3, 3, drawArm1
@@ -119,11 +118,10 @@ endDraw:
 j loop
 
 callMatch:
-#li $s5, 1		# defual mathch is false
 la $t7, 0
 
 checkMatch:
-beq $t7, 7, indexOut	# index out of boundry, exit
+beq $t7, 7, indexOut		# index out of boundry, exit
 lb $s0, 0($s4)
 beq $t8, $s0, match
 # if not match, increment t7, check next
@@ -134,9 +132,8 @@ add $s4, $s4, 1
 j checkMatch
 
 match:
-li $s5, 0		# ifMatch = true
-sb $t8, charArray($t7) # charArray[i] = $t8
-sub $s3, $s3, 1
+li $s5, 0			# ifMatch = true
+sb $t8, charArray($t7) 		# charArray[i] = $t8
 
 j afterMatch
 
@@ -144,28 +141,28 @@ j afterMatch
 ##************ random string generator **************************************#
 ranGen:
 # get the time
-li	$v0, 30		# get time in milliseconds - 64-bits
+li	$v0, 30			# get time in milliseconds - 64-bits
 syscall
 
-move	$s4, $a0	# save the lower 32-bits of time
+move	$s4, $a0		# save the lower 32-bits of time
 
 # seed the random generator
-li	$a0, 1		# random generator id
-move 	$a1, $s4	# seed from time
-li	$v0, 40		# seed random number generator syscall
+li	$a0, 1			# random generator id
+move 	$a1, $s4		# seed from time
+li	$v0, 40			# seed random number generator syscall
 syscall
 
-li	$a0, 1		# random generator id
-li	$a1, 10		# upper bound of the range
-li	$v0, 42		# random int range
+li	$a0, 1			# random generator id
+li	$a1, 10			# upper bound of the range
+li	$v0, 42			# random int range
 syscall
 
 # $a0 now holds the random number
-move $t4, $a0		# save the generated index into $t4
+move $t4, $a0			# save the generated index into $t4
 
-sll $t4, $t4, 3         # $t4 = $t7 * 8
-la $v0, strArray	# initial addr of array -> $s4
-add $v0, $v0, $t4	# locate element in array[index]
+sll $t4, $t4, 3         	# $t4 = $t7 * 8
+la $v0, strArray		# initial addr of array -> $s4
+add $v0, $v0, $t4		# locate element in array[index]
 
 jr $ra
 ########## end load the string from array with generated index ################
@@ -248,9 +245,8 @@ Bitmap:
    	subi   	$t0, $t0, 4			# back to privious pixel position
    	sub 	$t1, $t1, 1			# decrement number of pixel
    	bnez 	$t1, gallow_base2
-nop
-nop
-j endDraw
+
+j endBM
 ################################ End Initial Bitmap #######################################
 
 ################################ Hangman figure #######################################
@@ -336,7 +332,7 @@ j endDraw
 	sw 	$t2, 8($t0)	
 	nop				
 	nop
-	j endDraw				#j back where it left off
+	j endDraw			#j back where it left off
    
    drawBody:
    	la 	$t0, frameBuffer	# load frameBuffer addr
@@ -387,7 +383,7 @@ j endDraw
 	sw 	$t2, 0x418($t0)
    	nop				
 	nop
-   	#j endDraw				#j back where it left off
+   	j endDraw			#j back where it left off
    	
       	drawLeg1:
 	la 	$t0, frameBuffer	# load frameBuffer addr
@@ -456,5 +452,5 @@ winCondition:
  	syscall
  	j Exit
 Exit:
-	li $v0, 10 # terminate the program gracefully
+	li $v0, 10 		# terminate the program gracefully
 	syscall
