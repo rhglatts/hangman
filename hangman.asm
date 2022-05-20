@@ -14,11 +14,13 @@
  strArray: .asciiz "iceberg", "hangman", "ironman", "earplug", "cabbage", "adopter", "biznaga", "hackman", "mercury", "purpose"
  welcome_msg: .asciiz "*** Welcome to the Hangman Game ***"
  over_msg: .asciiz "*** Game Over!! ***"
+ over_msg2: .asciiz "*** Game Won!! ***"
  hint:.asciiz "Hint: it is 7-letter long.\n"
 word_now: .asciiz "\nYour word is:\n"
  space: .asciiz " "
  hiddenStr: .space 7 
  charArray: .byte '_','_', '_', '_', '_', '_', '_'
+ dash: .byte '_','_', '_', '_', '_', '_', '_'
  
  # test only, delete in final
  s1: .asciiz "The word generated is: (display to test, not in final program): "
@@ -63,16 +65,25 @@ la $a0, word_now
 jal print
 
 li $t6, 0		# charArray iterator
-
 charPrintLoop:
+beq $t5, 7, winCondition
 beq $t6, 7, endCharPrintLoop
 lb $a0, charArray($t6)
 li $v0, 11
 syscall
 la $a0, space
 jal print
+lb $a0, charArray($t6)
+lb $a1, dash($t6)
+bne $a0, $a1, equals
+
+midCharPrint:
 add $t6, $t6, 1
 j charPrintLoop
+
+equals:
+add $t5, $t5, 1
+j midCharPrint
 
 endCharPrintLoop:
 la $a0, prompt
@@ -83,6 +94,7 @@ syscall
 move $t8, $v0		# store user char input in $t8 
 
 add $s3, $s3, 1		# assume the guess is wrong, will reset when match
+li $t5, 0
 j callMatch
 
 indexOut:
@@ -415,6 +427,14 @@ game_over:
 	nop
 	li $v0, 55		# print game over prompt with pop window
 	la $a0, over_msg
+	li $a1, 1
+	syscall
+	j Exit
+	
+winCondition:
+	nop
+	li $v0, 55		# print game over prompt with pop window
+	la $a0, over_msg2
 	li $a1, 1
 	syscall
 	j Exit
