@@ -14,10 +14,11 @@
  strArray: .asciiz "iceberg", "hangman", "ironman", "earplug", "cabbage", "adopter", "biznaga", "hackman", "mercury", "purpose"
  welcome_msg: .asciiz "*** Welcome to the Hangman Game ***"
  over_msg: .asciiz "*** Game Over!! ***"
- word_out:.asciiz "Hint: it is 7-letter long.\n"
- dash: .asciiz "_ "
+ hint:.asciiz "Hint: it is 7-letter long.\n"
+word_now: .asciiz "\nYour word is:\n"
  space: .asciiz " "
  hiddenStr: .space 7 
+ charArray: .byte '_','_', '_', '_', '_', '_', '_'
  
  # test only, delete in final
  s1: .asciiz "The word generated is: (display to test, not in final program): "
@@ -30,6 +31,8 @@ la $a0, welcome_msg
 li $a1, 1
 syscall
  
+jal Bitmap
+
 jal ranGen		# call ranGen, string return in $v0
 move $t1, $v0		# the string now in $t1
 
@@ -40,85 +43,71 @@ jal print		# print for test only
 
 
 li $v0, 55  # print welcome prompt with pop window
-la $a0, word_out
+la $a0, hint
 li $a1, 1
 syscall
  
 la $t0, hiddenStr
-move $t0, $t1		# $t0 = $t1
+move $t0, $t1		# $t0 = $t1; hiddenStr = generated str
 
-la $a0, s2
-jal print
+#______________
 
-li $t2, 0		# iterator
-
-la $s1, dash
-la $s2, dash
-la $s3, dash
-la $s4, dash
-la $s5, dash
-la $s6, dash
-la $s7, dash
-
-addi $sp, $sp, -28
-sw $s1, 0($sp)
-sw $s2, 4($sp)
-sw $s3, 8($sp)
-sw $s4, 12($sp)
-sw $s5, 16($sp)
-sw $s6, 20($sp)
-sw $s7, 24($sp)
-
-charLoop:
-beq $t2, 7, endCharLoop
-lb $a0, 0($t0)
-beq $t8, $a0, equals
-
-lw $a0, 0($sp)
-jal print
-
-charMid:
-add $t0, $t0, 1		# increment str[i]
-add $t2, $t2, 1		# increment iterator
-add $sp, $sp, 4
-j charLoop
-
- equals:
- li $v0, 11
-syscall
-
-
-j charMid
- 
- 
-endCharLoop:
-addi $t0, $t0, -7		# increment str[i]
-addi $t2, $t2, -7		# increment iterator
-addi $sp, $sp, -28
-j loopReturn
-
-
-
-li $t3, 1		# iterator
+li $s3, 0		# incorrect guess iterator
+li $s7, 0			# loop iterator
 
 loop:
+beq $s3, 6, game_over		# 6 incorrect guess, end game
+beq $s7, 10, game_over
 
-beq $t3, 10, game_over  	# when the amount of incorrect guesses reaches 10, it's gameover
- 
-la $a0, prompt			# prompt ask for input
+la $a0, word_now
 jal print
 
+li $t6, 0		# charArray iterator
+charPrintLoop:
+beq $t6, 7, endCharPrintLoop
+lb $a0, charArray($t6)
+li $v0, 11
+syscall
+la $a0, space
+jal print
+add $t6, $t6, 1
+j charPrintLoop
+endCharPrintLoop:
+
+la $a0, prompt
+li $v0, 4
+syscall
 li $v0, 12
 syscall
-move $t8, $v0		# store user char input in $t8
+move $t8, $v0		# store user char input in $t8 
 
-j charLoop
+add $s3, $s3, 1		# assume the guess is wrong, will reset when match
+j callMatch
 
-loopReturn:
+indexOut:
+add $s7, $s7, 1
+j loop
 
- add $t3, $t3, 1
- j loop
- 
+callMatch:
+#li $s5, 1		# defual mathch is false
+li $t2, 0		# index of hiddenStr
+checkMatch:
+beq $t2, 8, indexOut	# index out of boundry, exit
+add $t0, $t0, $t2	# get element at index 
+lb $s0, 0($t0)
+beq $t8, $s0, match
+# if not match, increment t2, check next
+afterMatch:
+add $t2, $t2, 1
+j checkMatch
+
+match:
+sb $t8, charArray($t2) # charArray[i] = $t8
+sub $s3, $s3, 1
+j afterMatch
+
+
+
 
 ##************ random string generator **************************************#
 ranGen:
@@ -158,7 +147,10 @@ print_int:
 	li $v0, 1
 	syscall
 	jr $ra	
-
+print_char:
+	li $v0, 11
+	syscall
+	jr $ra
 ######################### Initial Bitmap ###########################################
 Bitmap:
 	# fill background color
@@ -176,8 +168,6 @@ Bitmap:
 	addi	$t0, $t0, 3908			# locate left top coner of gallow
 	li	$t1, 35				# gallow horizontal wood width
 	li	$t2, 0x00663300			# load gallow color
-
-	jr 	$ra				# exit bitmap initializating
    gallow_top:
    	sw 	$t2, 0($t0)
    	sw 	$t2, 256($t0)
@@ -311,7 +301,7 @@ jr $ra
 	sw 	$t2, 8($t0)	
 	nop				
 	nop
-	jr $ra				#j back where it left off
+	#j endDraw				#j back where it left off
    
    drawBody:
    	la 	$t0, frameBuffer	# load frameBuffer addr
@@ -325,7 +315,7 @@ jr $ra
    	bnez 	$t1, db_loop
    	nop				
 	nop
-	jr $ra				#j back where it left off
+	#jr $ra				#j back where it left off
    drawArm1:
    	la 	$t0, frameBuffer	# load frameBuffer addr
 	li	$t2, 0x00FFFFFF		# load color white
@@ -343,7 +333,7 @@ jr $ra
 	sw 	$t2, -0x418($t0)
    	nop				
 	nop
-   	jr $ra				#j back where it left off
+   	#j endDraw			#j back where it left off
    	
    drawArm2:
    	la 	$t0, frameBuffer	# load frameBuffer addr
@@ -362,7 +352,7 @@ jr $ra
 	sw 	$t2, 0x418($t0)
    	nop				
 	nop
-   	jr $ra				#j back where it left off
+   	#j endDraw				#j back where it left off
    	
       	drawLeg1:
 	la 	$t0, frameBuffer	# load frameBuffer addr
@@ -385,7 +375,7 @@ jr $ra
    	bnez 	$t1, lg1_loop
 	nop
 	nop
-   	jr $ra				#j back where it left off
+   	#j endDraw			#j back where it left off
    drawLeg2:
    	la 	$t0, frameBuffer	# load frameBuffer addr
 	li	$t2, 0x00FFFFFF		# load color white
@@ -408,7 +398,7 @@ jr $ra
    	bnez 	$t1, lg2_loop
    	nop				
 	nop
-   	jr $ra				#j back where it left off
+   	#j endDraw			#j back where it left off
    	
 #################################### End Draw Hangman ############################################## 
 
