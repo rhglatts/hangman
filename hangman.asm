@@ -28,6 +28,7 @@ word_now: .asciiz "\nYour word is:\n"
  
 .text
 main: 
+main: 
 li $v0, 55  # print welcome prompt with pop window
 la $a0, welcome_msg
 li $a1, 1
@@ -35,11 +36,11 @@ syscall
 
 
 jal ranGen		# call ranGen, string return in $v0
-move $t1, $v0		# the string now in $t1
+move $t4, $v0		# the string now in $t4
 
 la $a0, s1
 jal print
-move $a0, $t1
+move $a0, $t4
 jal print		# print for test only
 
 
@@ -48,8 +49,8 @@ la $a0, hint
 li $a1, 1
 syscall
  
-la $t0, hiddenStr
-move $t0, $t1		# $t0 = $t1; hiddenStr = generated str
+la $s4, hiddenStr
+move $s4, $t4		# $s4 = $t4; hiddenStr = generated str
 
 #______________
 
@@ -101,8 +102,8 @@ j callMatch
 
 indexOut:
 add $s7, $s7, 1
-addi $t2, $t2, -7
-addi $t0, $t0, -7
+addi $t7, $t7, -7
+addi $s4, $s4, -7
 
 beq $s5, 1, oneMoreWrongGuess
 afterOneMoreWrongGuess:
@@ -119,22 +120,22 @@ j loop
 
 callMatch:
 #li $s5, 1		# defual mathch is false
-la $t2, 0
+la $t7, 0
 
 checkMatch:
-beq $t2, 7, indexOut	# index out of boundry, exit
-lb $s0, 0($t0)
+beq $t7, 7, indexOut	# index out of boundry, exit
+lb $s0, 0($s4)
 beq $t8, $s0, match
-# if not match, increment t2, check next
+# if not match, increment t7, check next
 
 afterMatch:
-add $t2, $t2, 1
-add $t0, $t0, 1
+add $t7, $t7, 1
+add $s4, $s4, 1
 j checkMatch
 
 match:
 li $s5, 0		# ifMatch = true
-sb $t8, charArray($t2) # charArray[i] = $t8
+sb $t8, charArray($t7) # charArray[i] = $t8
 sub $s3, $s3, 1
 
 j afterMatch
@@ -146,11 +147,11 @@ ranGen:
 li	$v0, 30		# get time in milliseconds - 64-bits
 syscall
 
-move	$t0, $a0	# save the lower 32-bits of time
+move	$s4, $a0	# save the lower 32-bits of time
 
 # seed the random generator
 li	$a0, 1		# random generator id
-move 	$a1, $t0	# seed from time
+move 	$a1, $s4	# seed from time
 li	$v0, 40		# seed random number generator syscall
 syscall
 
@@ -160,11 +161,11 @@ li	$v0, 42		# random int range
 syscall
 
 # $a0 now holds the random number
-move $t1, $a0		# save the generated index into $t1
+move $t4, $a0		# save the generated index into $t4
 
-sll $t1, $t1, 3         # $t1 = $t2 * 8
-la $v0, strArray	# initial addr of array -> $t0
-add $v0, $v0, $t1	# locate element in array[index]
+sll $t4, $t4, 3         # $t4 = $t7 * 8
+la $v0, strArray	# initial addr of array -> $s4
+add $v0, $v0, $t4	# locate element in array[index]
 
 jr $ra
 ########## end load the string from array with generated index ################
