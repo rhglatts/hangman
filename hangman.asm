@@ -16,16 +16,12 @@
  over_msg: .asciiz 		"*** Game Over!! ***"
  over_msg2: .asciiz 		"*** Game Won!! ***"
  hint:.asciiz 			"Hint: it is 7-letter long.\n"
-word_now: .asciiz 		"\nYour word is:\n"
+word_now: .asciiz 		"\n\nYour word is:\n"
  space: .asciiz 		" "
  hiddenStr: .space 7 
  charArray: .byte 		'_','_', '_', '_', '_', '_', '_'
  dash: .byte 			'_','_', '_', '_', '_', '_', '_'
- 
- # test only, delete in final
- s1: .asciiz 			"The word generated is: (display to test, not in final program): "
- s2: .asciiz 			"\ntest if we can access char in str: (display to test, not in final program): "
- 
+  
 .text 
 main: 
 li $v0, 55  			# print welcome prompt with pop window
@@ -38,12 +34,6 @@ endBM:
 
 jal ranGen			# call ranGen, string return in $v0
 move $t4, $v0			# the string now in $t4
-
-la $a0, s1
-jal print
-move $a0, $t4
-jal print			# print for test only
-
 
 li $v0, 55  			# print welcome prompt with pop window
 la $a0, hint
