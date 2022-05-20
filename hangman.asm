@@ -19,6 +19,7 @@ word_now: .asciiz "\nYour word is:\n"
  space: .asciiz " "
  hiddenStr: .space 7 
  charArray: .byte '_','_', '_', '_', '_', '_', '_'
+ dash: .asciiz "correct"
  
  # test only, delete in final
  s1: .asciiz "The word generated is: (display to test, not in final program): "
@@ -63,6 +64,7 @@ la $a0, word_now
 jal print
 
 li $t6, 0		# charArray iterator
+
 charPrintLoop:
 beq $t6, 7, endCharPrintLoop
 lb $a0, charArray($t6)
@@ -72,8 +74,8 @@ la $a0, space
 jal print
 add $t6, $t6, 1
 j charPrintLoop
-endCharPrintLoop:
 
+endCharPrintLoop:
 la $a0, prompt
 li $v0, 4
 syscall
@@ -86,24 +88,32 @@ j callMatch
 
 indexOut:
 add $s7, $s7, 1
+addi $t2, $t2, -7
+addi $t0, $t0, -7
 j loop
 
 callMatch:
 #li $s5, 1		# defual mathch is false
-li $t2, 0		# index of hiddenStr
+la $t2, 0
+
 checkMatch:
-beq $t2, 8, indexOut	# index out of boundry, exit
-add $t0, $t0, $t2	# get element at index 
+beq $t2, 7, indexOut	# index out of boundry, exit
 lb $s0, 0($t0)
 beq $t8, $s0, match
 # if not match, increment t2, check next
+
 afterMatch:
 add $t2, $t2, 1
+add $t0, $t0, 1
 j checkMatch
 
 match:
 sb $t8, charArray($t2) # charArray[i] = $t8
 sub $s3, $s3, 1
+
+la $a0, dash
+jal print
+
 j afterMatch
 
 
