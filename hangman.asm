@@ -32,8 +32,7 @@ li $v0, 55  # print welcome prompt with pop window
 la $a0, welcome_msg
 li $a1, 1
 syscall
- 
-jal Bitmap
+
 
 jal ranGen		# call ranGen, string return in $v0
 move $t1, $v0		# the string now in $t1
@@ -56,10 +55,12 @@ move $t0, $t1		# $t0 = $t1; hiddenStr = generated str
 
 li $s3, 0		# incorrect guess iterator
 li $s7, 0			# loop iterator
+li $s5, 0
 
 loop:
 beq $s3, 6, game_over		# 6 incorrect guess, end game
 beq $s7, 10, game_over
+
 
 la $a0, word_now
 jal print
@@ -86,6 +87,7 @@ add $t5, $t5, 1
 j midCharPrint
 
 endCharPrintLoop:
+
 la $a0, prompt
 li $v0, 4
 syscall
@@ -93,7 +95,7 @@ li $v0, 12
 syscall
 move $t8, $v0		# store user char input in $t8 
 
-add $s3, $s3, 1		# assume the guess is wrong, will reset when match
+li $s5, 1		# boolean if match (true:0 false:1) defual false
 li $t5, 0
 j callMatch
 
@@ -101,6 +103,18 @@ indexOut:
 add $s7, $s7, 1
 addi $t2, $t2, -7
 addi $t0, $t0, -7
+
+beq $s5, 1, oneMoreWrongGuess
+afterOneMoreWrongGuess:
+beq $s3, 0, Bitmap
+beq $s3, 1, drawHead
+beq $s3, 2, drawBody
+beq $s3, 3, drawArm1
+beq $s3, 4, drawArm2
+beq $s3, 5, drawLeg1
+beq $s3, 6, drawLeg2
+endDraw:
+
 j loop
 
 callMatch:
@@ -119,12 +133,11 @@ add $t0, $t0, 1
 j checkMatch
 
 match:
+li $s5, 0		# ifMatch = true
 sb $t8, charArray($t2) # charArray[i] = $t8
 sub $s3, $s3, 1
 
 j afterMatch
-
-
 
 
 ##************ random string generator **************************************#
@@ -169,6 +182,9 @@ print_char:
 	li $v0, 11
 	syscall
 	jr $ra
+oneMoreWrongGuess:
+	add $s3, $s3, 1
+	j afterOneMoreWrongGuess
 ######################### Initial Bitmap ###########################################
 Bitmap:
 	# fill background color
@@ -233,7 +249,7 @@ Bitmap:
    	bnez 	$t1, gallow_base2
 nop
 nop
-jr $ra
+j endDraw
 ################################ End Initial Bitmap #######################################
 
 ################################ Hangman figure #######################################
@@ -319,7 +335,7 @@ jr $ra
 	sw 	$t2, 8($t0)	
 	nop				
 	nop
-	#j endDraw				#j back where it left off
+	j endDraw				#j back where it left off
    
    drawBody:
    	la 	$t0, frameBuffer	# load frameBuffer addr
@@ -333,7 +349,7 @@ jr $ra
    	bnez 	$t1, db_loop
    	nop				
 	nop
-	#jr $ra				#j back where it left off
+	j endDraw			#j back where it left off
    drawArm1:
    	la 	$t0, frameBuffer	# load frameBuffer addr
 	li	$t2, 0x00FFFFFF		# load color white
@@ -351,7 +367,7 @@ jr $ra
 	sw 	$t2, -0x418($t0)
    	nop				
 	nop
-   	#j endDraw			#j back where it left off
+   	j endDraw			#j back where it left off
    	
    drawArm2:
    	la 	$t0, frameBuffer	# load frameBuffer addr
@@ -393,7 +409,7 @@ jr $ra
    	bnez 	$t1, lg1_loop
 	nop
 	nop
-   	#j endDraw			#j back where it left off
+   	j endDraw			#j back where it left off
    drawLeg2:
    	la 	$t0, frameBuffer	# load frameBuffer addr
 	li	$t2, 0x00FFFFFF		# load color white
@@ -416,7 +432,7 @@ jr $ra
    	bnez 	$t1, lg2_loop
    	nop				
 	nop
-   	#j endDraw			#j back where it left off
+   	j game_over			#j back where it left off
    	
 #################################### End Draw Hangman ############################################## 
 
@@ -430,15 +446,14 @@ game_over:
 	li $a1, 1
 	syscall
 	j Exit
-	
-winCondition:
-	nop
-	li $v0, 55		# print game over prompt with pop window
-	la $a0, over_msg2
-	li $a1, 1
-	syscall
-	j Exit
 
+winCondition:
+ 	nop
+ 	li $v0, 55		# print game over prompt with pop window
+ 	la $a0, over_msg2
+ 	li $a1, 1
+ 	syscall
+ 	j Exit
 Exit:
 	li $v0, 10 # terminate the program gracefully
 	syscall
