@@ -1,12 +1,35 @@
 # CS2640 Final Project - Hangman Game
 # Team Member: Huijun Hu, Yvonne Li, Isaiah Hessler, Rebecca Glatts
 
+#Description of Project:
+#A random word is chosen from a bank of words stored in memory.
+#The player has to guess the word one letter at a time.
+#If the letter the player guesses is in the word, the letter fills in the blanks where it is in the word.
+#i.e. for the word “hangman” if the player guesses the letter “A” it would display _A_ _ _ _ A _
+#If the player guesses the letter wrong, another part of the hangman is drawn. 
+#6 pieces in total: head, body, left arm, right arm, left leg, right leg
+#The player has a limited amount of guesses (6) before the game is over, so they should be careful in what letters they choose.
+
 # Bitmap Display Configuration:
 # - Unit width in pixels: 4					     
 # - Unit height in pixels: 4
 # - Display width in pixels: 256
 # - Display height in pixels: 512
 # - Base Address for Display: 0x10010000
+
+#$ra - used to store return values from functions, including getting random numbers, and printing integers and chars
+#$v0 - where return value is stored after function is completed
+#$a0 - stores first argument of a call, usually used for messages stored in .data
+#$a1 - stores the second, optional argument of a call used for the random number generator and the pop-up windows
+
+# $t0 - temporary register stores addr of frameBuffer
+# $t1 - temporary register stores loop iterator for Bitmap
+# $t2 - temporary register stores color that will be use to draw
+# $t4 - temporary register stores the generated string from strArray
+# $t5 - temporary register stores count the number if right guess(es)
+# $t6 - temporary register stores charArray iterator 
+# $t7 - temporary register stores index of charArray
+# $t8 - temporary register stores user input character
 
 .data
  frameBuffer: .space 0x80000
@@ -155,7 +178,7 @@ syscall
 # $a0 now holds the random number
 move $t4, $a0			# save the generated index into $t4
 
-sll $t4, $t4, 3         	# $t4 = $t7 * 8
+sll $t4, $t4, 3                # $t4 = $t4 * 8
 la $v0, strArray		# initial addr of array -> $s4
 add $v0, $v0, $t4		# locate element in array[index]
 
