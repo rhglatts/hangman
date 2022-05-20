@@ -19,7 +19,6 @@ word_now: .asciiz "\nYour word is:\n"
  space: .asciiz " "
  hiddenStr: .space 7 
  charArray: .byte '_','_', '_', '_', '_', '_', '_'
- dash: .asciiz "correct"
  
  # test only, delete in final
  s1: .asciiz "The word generated is: (display to test, not in final program): "
@@ -110,9 +109,6 @@ j checkMatch
 match:
 sb $t8, charArray($t2) # charArray[i] = $t8
 sub $s3, $s3, 1
-
-la $a0, dash
-jal print
 
 j afterMatch
 
