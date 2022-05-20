@@ -51,16 +51,17 @@ li $s5, 0
 
 loop:
 beq $s3, 6, game_over		# 6 incorrect guess, end game
-beq $s7, 20, game_over
+beq $s7, 20, game_over          # 20 guess, end game
 
 
 la $a0, word_now
 jal print
 
 li $t6, 0			# charArray iterator
+
 charPrintLoop:
-beq $t5, 7, winCondition
-beq $t6, 7, endCharPrintLoop
+beq $t5, 7, winCondition             # check if correct guess, show win condition
+beq $t6, 7, endCharPrintLoop         
 lb $a0, charArray($t6)
 li $v0, 11
 syscall
@@ -68,14 +69,14 @@ la $a0, space
 jal print
 lb $a0, charArray($t6)
 lb $a1, dash($t6)
-bne $a0, $a1, equals
+bne $a0, $a1, equals               # check if a0 not equal to a1, go to equals
 
 midCharPrint:
-add $t6, $t6, 1
+add $t6, $t6, 1                   # increment
 j charPrintLoop
 
 equals:
-add $t5, $t5, 1
+add $t5, $t5, 1                  # increment
 j midCharPrint
 
 endCharPrintLoop:
@@ -92,7 +93,7 @@ li $t5, 0
 j callMatch
 
 indexOut:
-add $s7, $s7, 1
+add $s7, $s7, 1             # increment
 addi $t7, $t7, -7
 addi $s4, $s4, -7
 
@@ -114,12 +115,11 @@ la $t7, 0
 checkMatch:
 beq $t7, 7, indexOut		# index out of boundry, exit
 lb $s0, 0($s4)
-beq $t8, $s0, match
-# if not match, increment t7, check next
+beq $t8, $s0, match          # if not match, increment t7, check next
 
 afterMatch:
-add $t7, $t7, 1
-add $s4, $s4, 1
+add $t7, $t7, 1          # increment
+add $s4, $s4, 1          # increment
 j checkMatch
 
 match:
@@ -175,7 +175,7 @@ print_char:
 	syscall
 	jr $ra
 oneMoreWrongGuess:
-	add $s3, $s3, 1
+	add $s3, $s3, 1                # increment
 	j afterOneMoreWrongGuess
 ######################### Initial Bitmap ###########################################
 Bitmap:
